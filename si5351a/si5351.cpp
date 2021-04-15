@@ -32,7 +32,7 @@
 /* Public functions */
 /********************/
 
-Si5351::Si5351(uint8_t i2c_addr) : i2c_bus_addr(i2c_addr)
+Si5351::Si5351(I2C *i2c, uint8_t i2c_addr ) : i2c_bus_addr(i2c_addr), i2c_port(i2c)
 {
 	dev_status.SYS_INIT = 0;
 	dev_status.LOL_A = 0;
@@ -71,15 +71,12 @@ Si5351::Si5351(uint8_t i2c_addr) : i2c_bus_addr(i2c_addr)
  */
 bool Si5351::init(uint8_t xtal_load_c, uint32_t xo_freq, int32_t corr)
 {
-	// Start I2C comms
-	//Wire.begin();
-
 	// Check for a device on the bus, bail out if it is not there
-	//Wire.beginTransmission(i2c_bus_addr);
-	uint8_t reg_val;
-	//reg_val = Wire.endTransmission();
 
-	if (reg_val == 0)
+	uint8_t rxdata;
+	int reg_val=i2c_port->read_blocking(i2c_bus_addr,&rxdata,1,0);
+
+	if (reg_val >= 0)
 	{
 		// Wait for SYS_INIT flag to be clear, indicating that device is ready
 		uint8_t status_reg = 0;
@@ -1318,29 +1315,20 @@ void Si5351::set_ref_freq(uint32_t ref_freq, enum si5351_pll_input ref_osc)
 
 uint8_t Si5351::si5351_write_bulk(uint8_t addr, uint8_t bytes, uint8_t *data)
 {
-	//Wire.beginTransmission(i2c_bus_addr);
-	//Wire.write(addr);
-	for (int i = 0; i < bytes; i++)
-	{
-		//Wire.write(data[i]);
-	}
-	return 0;//Wire.endTransmission();
+	return i2c_port->write_blocking(addr,data,bytes,0);
 }
 
 uint8_t Si5351::si5351_write(uint8_t addr, uint8_t data)
 {
-	return 0;
-	// Wire.beginTransmission(i2c_bus_addr);
-	// Wire.write(addr);
-	// Wire.write(data);
-	// return Wire.endTransmission();
+	return i2c_port->write_blocking(addr,&data,1,0);
 }
 
 uint8_t Si5351::si5351_read(uint8_t addr)
 {
 	uint8_t reg_val = 0;
 
-	return 0;
+	i2c_port->read_blocking(addr,&reg_val,1,0);
+	
 	// Wire.beginTransmission(i2c_bus_addr);
 	// Wire.write(addr);
 	// Wire.endTransmission();
@@ -1352,7 +1340,7 @@ uint8_t Si5351::si5351_read(uint8_t addr)
 	// 	reg_val = Wire.read();
 	// }
 
-	// return reg_val;
+	return reg_val;
 }
 
 /*********************/

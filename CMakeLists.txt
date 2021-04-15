@@ -15,8 +15,8 @@ include(pico_sdk_import.cmake)
 project(FT8Transceiver C CXX ASM)
 
 set(PICO_CXX_ENABLE_EXCEPTIONS 0)
-
 set(PICO_CXX_ENABLE_RTTI 0)
+set(PICO_NO_BINARY_INFO 0)
 
 # Initialise the Pico SDK
 pico_sdk_init()
