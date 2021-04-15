@@ -1,0 +1,18 @@
+# Generated Cmake Pico project file
+
+cmake_minimum_required(VERSION 3.13)
+
+set(CMAKE_C_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+
+
+add_library(si5351a STATIC si5351.cpp i2c.cpp)
+# Add the standard library to the build
+target_link_libraries(si5351a pico_stdlib)
+
+# Add any user requested libraries
+target_link_libraries(si5351a hardware_i2c hardware_gpio )
+
+
+target_include_directories (si5351a PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
